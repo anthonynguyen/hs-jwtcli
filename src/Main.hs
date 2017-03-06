@@ -2,8 +2,9 @@ module Main where
 
 import Data.Char (chr,digitToInt,intToDigit,ord)
 import Data.List (elemIndex)
-import Data.Maybe (mapMaybe)
+import Data.Maybe (fromJust,isNothing,mapMaybe)
 import Numeric (readInt,showIntAtBase)
+import System.Exit (ExitCode(ExitFailure),exitWith)
 
 data JWT = JWT { header :: String
                , payload :: String
@@ -15,7 +16,14 @@ main = do
     line <- getLine
     let jwt = parseJWT line
 
-    print jwt
+    if isNothing jwt
+        then do
+            putStrLn "invalid jwt"
+            exitWith (ExitFailure 1)
+        else do
+            let j = fromJust jwt
+            putStrLn $ header j
+            putStrLn $ payload j
 
 --------------------------------------------------------------------------------
 
