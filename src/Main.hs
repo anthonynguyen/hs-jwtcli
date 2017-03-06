@@ -2,14 +2,36 @@ module Main where
 
 import Data.Char (chr,digitToInt,intToDigit,ord)
 import Data.List (elemIndex)
+import Data.Maybe (mapMaybe)
 import Numeric (readInt,showIntAtBase)
+
+data JWT = JWT { header :: String
+               , payload :: String
+               , signature :: String
+               } deriving (Show)
 
 main :: IO ()
 main = do
-    putStrLn $ base64encode "test"
-    putStrLn $ show $ base64decode "dGVzdA="
-    putStrLn $ show $ base64decode "YXNkZg"
-    putStrLn $ show $ base64decode "YXNkZmZ6cA"
+    line <- getLine
+    let jwt = parseJWT line
+
+    print jwt
+
+--------------------------------------------------------------------------------
+
+parseJWT :: String -> Maybe JWT
+parseJWT xs
+  | length decoded /= 3 = Nothing
+  | otherwise = Just $ JWT (head decoded) (decoded !! 1) (last decoded)
+    where parts = split (== '.') xs
+          decoded = mapMaybe base64decode parts
+
+split :: (a -> Bool) -> [a] -> [[a]]
+split p xs = snd folded ++ [fst folded]
+    where folded = foldl helper ([], []) xs
+          helper acc x
+            | (p x) = ([], snd acc ++ [fst acc])
+            | otherwise = (fst acc ++ [x], snd acc)
 
 --------------------------------------------------------------------------------
 
