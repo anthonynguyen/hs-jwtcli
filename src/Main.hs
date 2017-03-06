@@ -13,7 +13,7 @@ main = do
 
 --------------------------------------------------------------------------------
 
-base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 
 base64encode :: String -> String
 base64encode xs = unpad $ map (base64chars !!) $ map unbits $ splitEvery 6
