@@ -7,9 +7,9 @@ import Numeric (readInt,showIntAtBase)
 main :: IO ()
 main = do
     putStrLn $ base64encode "test"
-    putStrLn $ show $ base64decode "dGVzdA=="
-    putStrLn $ show $ base64decode "YXNkZg=="
-    putStrLn $ show $ base64decode "YXNkZmZ6cA=="
+    putStrLn $ show $ base64decode "dGVzdA="
+    putStrLn $ show $ base64decode "YXNkZg"
+    putStrLn $ show $ base64decode "YXNkZmZ6cA"
 
 --------------------------------------------------------------------------------
 
@@ -26,13 +26,14 @@ base64encode xs = unpad $ map (base64chars !!) $ map unbits $ splitEvery 6
           unpad xs = reverse $ (replicate pad '=') ++ (drop pad $ reverse xs)
 
 base64decode :: String -> Maybe String
-base64decode xs
+base64decode xs_
   | any (not . (flip elem) ('=':base64chars)) xs = Nothing
   | otherwise = Just $ unpad $ map chr $ map unbits $ splitEvery 8 
                 $ concat $ bitsn 6 $ map charToIndex xxs
-    where pad = length $ takeWhile (== '=') $ reverse xs
+    where xs = filter (/= '\n') xs_
+          pad = length $ takeWhile (== '=') $ reverse xs
           xxs = reverse $ (replicate pad 'A') ++ (drop pad $ reverse xs)
-          unpad = reverse . drop pad . reverse
+          unpad = reverse . dropWhile (== '\0') . drop pad . reverse
 
 -- this function should only be used once we've verified our string
 charToIndex :: Char -> Int
