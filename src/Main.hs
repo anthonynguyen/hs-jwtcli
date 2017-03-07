@@ -14,14 +14,11 @@ data JWT = JWT { header :: String
 main :: IO ()
 main = do
     line <- getLine
-    let jwt = parseJWT line
-
-    if isNothing jwt
-        then do
+    case (parseJWT line) of
+        Nothing -> do
             putStrLn "invalid jwt"
             exitWith (ExitFailure 1)
-        else do
-            let j = fromJust jwt
+        (Just j) -> do
             putStrLn $ header j
             putStrLn $ payload j
 
